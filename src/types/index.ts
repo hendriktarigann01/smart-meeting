@@ -1,8 +1,8 @@
 // Meeting Room Types
 export type RoomSize =
-  | "small"
-  | "medium"
-  | "large"
+  | "small-room"
+  | "medium-room"
+  | "large-room"
   | "auditorium";
 
 export type ProductCategory =
@@ -55,11 +55,53 @@ export interface TableLayoutOption {
   image?: string;
 }
 
+export interface ImplementationOption {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+}
+
 export interface ScreenLayoutOption {
   id: string;
   title: string;
   description: string;
   image?: string;
+}
+
+export interface CameraOption {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+}
+
+export interface QuickShareOption {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  resolution?: string;
+  simultaneous_connections?: string;
+  os_compatibility?: string;
+  wireless_range?: string;
+  image_segmentation?: string;
+  connection_type?: string;
+  split_screen?: string;
+}
+
+export interface SpeakerOption {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+}
+
+export interface SummaryItem {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
 }
 
 export interface ConfigurationState {
@@ -69,5 +111,9 @@ export interface ConfigurationState {
   totalSteps: number;
   selectedProduct?: LEDProductOption;
   selectedTableLayout?: TableLayoutOption;
-  // Add more as needed
+  selectedImplementation?: ImplementationOption;
+  selectedScreenLayout?: ScreenLayoutOption;
+  selectedCamera?: CameraOption;
+  selectedQuickShare?: QuickShareOption;
+  selectedSpeaker?: SpeakerOption;
 }

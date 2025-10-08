@@ -33,15 +33,12 @@ export function TableStep() {
     <div className="space-y-4">
       <div>
         <div className="flex items-center justify-between border-b border-gray-400">
-          
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Table Layout
           </h2>
-          <h3 className="text-xs font-medium">Step 2/5</h3>
+          <h3 className="text-xs font-medium">Step 2/6</h3>
         </div>
-        <p className="text-gray-500 mt-2">
-          Table Shape
-        </p>
+        <p className="text-teal-500 text-sm mt-2">Table Shape</p>
       </div>
 
       <div className="space-y-2">
@@ -53,11 +50,6 @@ export function TableStep() {
             image={option.image}
             isSelected={selectedTableLayout?.id === option.id}
             onSelect={() => setSelectedTableLayout(option)}
-            detailTitle={option.detailTitle}
-            detailDescription={option.detailDescription}
-            detailBenefits={option.detailBenefits}
-            detailRecommendation={option.detailRecommendation}
-            detailImage={option.detailImage}
           />
         ))}
       </div>

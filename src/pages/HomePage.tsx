@@ -56,27 +56,25 @@ export function HomePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-white ">
       <Header />
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-6 space-y-10">
+      <main className="flex-1 container h-screen mx-auto px-6 space-y-8 ">
         {/* Hero Section */}
         <div className="text-center">
-          <p className="text-2xl md:text-4xl font-medium text-gray-800 dark:text-gray-100 mb-4">
+          <p className="text-2xl md:text-4xl font-medium text-gray-800 mb-4">
             Meeting Rooms to Suit Your Needs
           </p>
-          <p className="text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <p className="text-base text-gray-600 max-w-3xl mx-auto">
             Create your ideal workspace. Use our interactive configurator to
             shape spaces that inspire performance.
           </p>
         </div>
-
         {/* Product Category Menu */}
         <div className="flex justify-center">
           <ProductMenu onCategoryChange={handleCategoryChange} />
         </div>
-
         {/* Room Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {meetingRooms.map((room) => (

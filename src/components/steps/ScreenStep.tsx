@@ -28,6 +28,20 @@ const screenOptions: ScreenLayoutOption[] = [
     description: "Versatile solution for medium-sized indoor applications.",
     image: "/screen/led.png",
   },
+  {
+    id: "p3.0",
+    title: "P3.0",
+    description:
+      "An economical choice with solid performance for large screens. Provides clear visibility for visual communication in indoor public spaces.",
+    image: "/screen/led.png",
+  },
+  {
+    id: "p4.0",
+    title: "P4.0",
+    description:
+      "Designed for large spaces with long-distance visibility. Ideal for indoor events, large halls, or conference rooms with high capacity.",
+    image: "/screen/led.png",
+  },
 ];
 
 export function ScreenStep() {
@@ -38,11 +52,11 @@ export function ScreenStep() {
       <div>
         <div className="flex items-center justify-between border-b border-gray-400">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
-            Product Selection
+            Screens
           </h2>
-          <h3 className="text-xs font-medium">Step 1/5</h3>
+          <h3 className="text-xs font-medium">Step 3/6</h3>
         </div>
-        <p className="text-gray-500 mt-2">Choose between LED Indoor</p>
+        <p className="text-teal-500 text-sm mt-2">Screen Size</p>
       </div>
 
       <div
@@ -60,11 +74,6 @@ export function ScreenStep() {
             image={option.image}
             isSelected={selectedScreenLayout?.id === option.id}
             onSelect={() => setSelectedScreenLayout(option)}
-            detailTitle={option.detailTitle}
-            detailDescription={option.detailDescription}
-            detailBenefits={option.detailBenefits}
-            detailRecommendation={option.detailRecommendation}
-            detailImage={option.detailImage}
           />
         ))}
       </div>

@@ -41,24 +41,25 @@ export function OptionCard({
     <Card
       onClick={onSelect}
       className={`
-        transition-all duration-200
-        ${
-          isSelected
-            ? "border-2 border-teal-500"
-            : "border-2 border-gray-200"
-        }
+        transition-all duration-200 cursor-pointer
+        ${isSelected ? "border-2 border-teal-500" : "border-2 border-gray-200"}
       `}
     >
       <CardContent className="p-5">
-        <div className="flex items-start gap-4">
+        <div className="flex items-center gap-4">
           {/* Icon/Image */}
           {(icon || image) && (
             <div className="flex-shrink-0 w-15 h-15 flex items-center justify-center overflow-hidden">
               {image ? (
                 <img
-                  src={image}
+                  src={image || "https://placehold.co/60x60"}
                   alt={title}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = "https://placehold.co/60x60";
+                  }}
                 />
               ) : (
                 icon
@@ -68,7 +69,7 @@ export function OptionCard({
 
           {/* Content */}
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-gray-800">{title}</h3>
               {hasDetails && (
                 <Dialog>
@@ -78,7 +79,7 @@ export function OptionCard({
                   >
                     <Info size={16} className="text-gray-400" />
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[80vh] ">
+                  <DialogContent className="max-w-2xl max-h-[90vh] ">
                     <DialogHeader>
                       <DialogTitle className="text-2xl">
                         Which LED Indoor setup is right for you?

@@ -5,6 +5,10 @@ import {
   LEDProductOption,
   TableLayoutOption,
   ScreenLayoutOption,
+  CameraOption,
+  QuickShareOption,
+  SpeakerOption,
+  ImplementationOption,
 } from "@/types";
 
 interface ConfigState {
@@ -21,8 +25,12 @@ interface ConfigState {
 
   // Selections
   selectedProduct: LEDProductOption | null;
-  selectedScreenLayout: ScreenLayoutOption | null;
   selectedTableLayout: TableLayoutOption | null;
+  selectedImplementation: ImplementationOption | null;
+  selectedScreenLayout: ScreenLayoutOption | null;
+  selectedCamera: CameraOption | null;
+  selectedQuickShare: QuickShareOption | null;
+  selectedSpeaker: SpeakerOption | null;
 
   // Actions
   setRoomConfig: (
@@ -36,8 +44,12 @@ interface ConfigState {
   nextStep: () => void;
   prevStep: () => void;
   setSelectedProduct: (product: LEDProductOption) => void;
-  setSelectedScreenLayout: (layout: ScreenLayoutOption) => void;
   setSelectedTableLayout: (layout: TableLayoutOption) => void;
+  setSelectedImplementation: (implementation: ImplementationOption) => void;
+  setSelectedScreenLayout: (layout: ScreenLayoutOption) => void;
+  setSelectedCamera: (camera: CameraOption) => void;
+  setSelectedQuickShare: (quickshare: QuickShareOption) => void;
+  setSelectedSpeaker: (speaker: SpeakerOption) => void;
   resetConfig: () => void;
 }
 
@@ -48,10 +60,14 @@ export const useConfigStore = create<ConfigState>((set) => ({
   roomCapacity: "",
   roomDimensions: "",
   currentStep: 1,
-  totalSteps: 5,
+  totalSteps: 8, // ← Update ke 8 (Product, Table, Implementation, Screen, Camera, QuickShare, Speaker, Summary)
   selectedProduct: null,
-  selectedScreenLayout: null,
   selectedTableLayout: null,
+  selectedImplementation: null,
+  selectedScreenLayout: null,
+  selectedCamera: null,
+  selectedQuickShare: null,
+  selectedSpeaker: null,
 
   setRoomConfig: (category, roomSize, title, capacity, dimensions) =>
     set({
@@ -77,9 +93,19 @@ export const useConfigStore = create<ConfigState>((set) => ({
 
   setSelectedProduct: (product) => set({ selectedProduct: product }),
 
+  setSelectedTableLayout: (layout) => set({ selectedTableLayout: layout }),
+
+  setSelectedImplementation: (implementation) =>
+    set({ selectedImplementation: implementation }),
+
   setSelectedScreenLayout: (layout) => set({ selectedScreenLayout: layout }),
 
-  setSelectedTableLayout: (layout) => set({ selectedTableLayout: layout }),
+  setSelectedCamera: (camera) => set({ selectedCamera: camera }),
+
+  setSelectedQuickShare: (quickshare) =>
+    set({ selectedQuickShare: quickshare }),
+
+  setSelectedSpeaker: (speaker) => set({ selectedSpeaker: speaker }),
 
   resetConfig: () =>
     set({
@@ -90,7 +116,11 @@ export const useConfigStore = create<ConfigState>((set) => ({
       roomDimensions: "",
       currentStep: 1,
       selectedProduct: null,
-      selectedScreenLayout: null,
       selectedTableLayout: null,
+      selectedImplementation: null,
+      selectedScreenLayout: null,
+      selectedCamera: null,
+      selectedQuickShare: null,
+      selectedSpeaker: null,
     }),
 }));

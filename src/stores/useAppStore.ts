@@ -13,7 +13,7 @@ interface AppState {
 
 export const useAppStore = create<AppState>((set) => ({
   currentStep: 1,
-  totalSteps: 5,
+  totalSteps: 7,
 
   setCurrentStep: (step) => set({ currentStep: step }),
 

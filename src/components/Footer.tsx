@@ -1,7 +1,7 @@
 import { Globe, Phone } from "lucide-react";
 export default function Footer() {
   return (
-    <footer className="w-full p-6 flex items-center gap-6">
+    <footer className="w-full p-5 flex items-center gap-6">
       <a
         href="https://mjsolution.co.id"
         target="_blank"
