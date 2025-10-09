@@ -1,6 +1,8 @@
 import { OptionCard } from "@/components/OptionCard";
+import { ProductDetailModal } from "@/components/modal/ProductDetailModal";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { LEDProductOption } from "@/types";
+import { Card, CardContent } from "@/components/ui/card";
 
 const productOptions: LEDProductOption[] = [
   {
@@ -41,16 +43,17 @@ const productOptions: LEDProductOption[] = [
 ];
 
 export function ProductStep() {
-  const { selectedProduct, setSelectedProduct } = useConfigStore();
+  const { selectedProduct, setSelectedProduct, totalSteps } = useConfigStore();
 
   return (
     <div className="space-y-4">
       <div>
-        <div className="flex items-center justify-between border-b border-gray-400">
+        <div className="flex items-center justify-between border-b-2 border-gray-200">
+          {/*Title */}
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Install Option
           </h2>
-          <h3 className="text-xs font-medium">Step 1/6</h3>
+          <h3 className="text-xs font-medium">Step 1/{totalSteps}</h3>
         </div>
         <p className="text-teal-500 text-sm mt-2">
           Choose between Modules or Cabinets for your video wall configuration.
@@ -59,19 +62,55 @@ export function ProductStep() {
 
       <div className="space-y-4">
         {productOptions.map((option) => (
-          <OptionCard
+          <Card
             key={option.id}
-            title={option.title}
-            description={option.description}
-            image={option.image}
-            isSelected={selectedProduct?.id === option.id}
-            onSelect={() => setSelectedProduct(option)}
-            detailTitle={option.detailTitle}
-            detailDescription={option.detailDescription}
-            detailBenefits={option.detailBenefits}
-            detailRecommendation={option.detailRecommendation}
-            detailImage={option.detailImage}
-          />
+            onClick={() => setSelectedProduct(option)}
+            className={`
+              transition-all duration-200 cursor-pointer
+              ${
+                selectedProduct?.id === option.id
+                  ? "border-2 border-teal-500"
+                  : "border-2 border-gray-200"
+              }
+            `}
+          >
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                {/* Image */}
+                {option.image && (
+                  <div className="flex-shrink-0 w-15 h-15 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={option.image}
+                      alt={option.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.onerror = null;
+                        target.src = "https://placehold.co/60x60";
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-gray-800">
+                      {option.title}
+                    </h3>
+                    <ProductDetailModal
+                      detailTitle={option.detailTitle}
+                      detailDescription={option.detailDescription}
+                      detailBenefits={option.detailBenefits}
+                      detailRecommendation={option.detailRecommendation}
+                      detailImage={option.detailImage}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">{option.description}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>

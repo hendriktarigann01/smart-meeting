@@ -26,14 +26,6 @@ export interface Product {
   description?: string;
 }
 
-// Configuration Step Types
-export type ConfigStep =
-  | "product-selection"
-  | "table-layout"
-  | "seating"
-  | "accessories"
-  | "summary";
-
 export interface LEDProductOption {
   id: string;
   type: "modul" | "cabinet";
@@ -49,7 +41,7 @@ export interface LEDProductOption {
 
 export interface TableLayoutOption {
   id: string;
-  shape: "rectangular" | "tapered" | "round";
+  shape: string;
   title: string;
   description: string;
   image?: string;
@@ -79,6 +71,7 @@ export interface CameraOption {
 export interface QuickShareOption {
   id: string;
   title: string;
+  title_compare: string;
   description: string;
   image?: string;
   resolution?: string;

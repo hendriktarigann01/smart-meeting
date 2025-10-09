@@ -51,16 +51,17 @@ interface ConfigState {
   setSelectedQuickShare: (quickshare: QuickShareOption) => void;
   setSelectedSpeaker: (speaker: SpeakerOption) => void;
   resetConfig: () => void;
+  getTotalSteps: () => number;
 }
 
-export const useConfigStore = create<ConfigState>((set) => ({
+export const useConfigStore = create<ConfigState>((set, get) => ({
   category: null,
   roomSize: null,
   roomTitle: "",
   roomCapacity: "",
   roomDimensions: "",
   currentStep: 1,
-  totalSteps: 8, // ← Update ke 8 (Product, Table, Implementation, Screen, Camera, QuickShare, Speaker, Summary)
+  totalSteps: 8,
   selectedProduct: null,
   selectedTableLayout: null,
   selectedImplementation: null,
@@ -69,27 +70,84 @@ export const useConfigStore = create<ConfigState>((set) => ({
   selectedQuickShare: null,
   selectedSpeaker: null,
 
-  setRoomConfig: (category, roomSize, title, capacity, dimensions) =>
-    set({
-      category,
-      roomSize,
-      roomTitle: title,
-      roomCapacity: capacity,
-      roomDimensions: dimensions,
-      currentStep: 1,
-    }),
+  getTotalSteps: () => {
+    const state = get();
+    const { category } = state;
 
-  setCurrentStep: (step) => set({ currentStep: step }),
+    if (category === "interactive-whiteboard") {
+      return 8; // Product, Table, Implementation, Screen, Camera, QuickShare, Speaker, Summary
+    } else if (category === "video-wall") {
+      return 7; // Product, Table, Screen, Camera, QuickShare, Speaker, Summary
+    } else if (category === "led-indoor") {
+      return 7; // Product, Table, Screen, Camera, QuickShare, Speaker, Summary
+    }
 
-  nextStep: () =>
-    set((state) => ({
-      currentStep: Math.min(state.currentStep + 1, state.totalSteps),
-    })),
+    return 8;
+  },
 
-  prevStep: () =>
-    set((state) => ({
-      currentStep: Math.max(state.currentStep - 1, 1),
-    })),
+  setRoomConfig: (category, roomSize, title, capacity, dimensions) => {
+    const state = get();
+    const totalSteps = (() => {
+      if (category === "interactive-whiteboard") {
+        return 8;
+      } else if (category === "video-wall" || category === "led-indoor") {
+        return 7;
+      }
+      return 8;
+    })();
+
+    // Only reset if category or roomSize actually changed
+    if (state.category !== category || state.roomSize !== roomSize) {
+      set({
+        category,
+        roomSize,
+        roomTitle: title,
+        roomCapacity: capacity,
+        roomDimensions: dimensions,
+        currentStep: 1,
+        totalSteps,
+      });
+    } else {
+      // Just update room info, keep current step
+      set({
+        category,
+        roomSize,
+        roomTitle: title,
+        roomCapacity: capacity,
+        roomDimensions: dimensions,
+        totalSteps,
+      });
+    }
+  },
+
+  setCurrentStep: (step) => {
+    console.log("setCurrentStep called with:", step);
+    set({ currentStep: step });
+  },
+
+  nextStep: () => {
+    const state = get();
+    const newStep = Math.min(state.currentStep + 1, state.totalSteps);
+    console.log(
+      "nextStep called, moving from",
+      state.currentStep,
+      "to",
+      newStep
+    );
+    set({ currentStep: newStep });
+  },
+
+  prevStep: () => {
+    const state = get();
+    const newStep = Math.max(state.currentStep - 1, 1);
+    console.log(
+      "prevStep called, moving from",
+      state.currentStep,
+      "to",
+      newStep
+    );
+    set({ currentStep: newStep });
+  },
 
   setSelectedProduct: (product) => set({ selectedProduct: product }),
 

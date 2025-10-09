@@ -1,9 +1,11 @@
 import { OptionCard } from "@/components/OptionCard";
 import { useConfigStore } from "@/stores/useConfigStore";
+import { SummaryItem } from "@/types";
 
 export function SummaryStep() {
   const {
     roomDimensions,
+    totalSteps,
     selectedProduct,
     selectedTableLayout,
     selectedImplementation,
@@ -13,7 +15,7 @@ export function SummaryStep() {
     selectedSpeaker,
   } = useConfigStore();
 
-  const summaryItems = [
+  const summaryItems: SummaryItem[] = [
     {
       id: "room-size",
       title: "Room Size",
@@ -26,13 +28,13 @@ export function SummaryStep() {
       description: selectedProduct?.title,
       image: selectedProduct?.image,
     },
-    {
+    selectedTableLayout && {
       id: "table-layout",
       title: "Table Layout",
       description: selectedTableLayout?.title,
       image: selectedTableLayout?.image,
     },
-    {
+    selectedImplementation && {
       id: "implementation",
       title: "Implementation",
       description: selectedImplementation?.title,
@@ -56,22 +58,25 @@ export function SummaryStep() {
       description: selectedQuickShare?.title,
       image: selectedQuickShare?.image,
     },
-    {
+    selectedSpeaker && {
       id: "speaker",
       title: "Speaker",
       description: selectedSpeaker?.title,
       image: selectedSpeaker?.image,
     },
-  ];
+  ].filter(Boolean); // Remove null/undefined items
 
   return (
     <div className="space-y-4">
       <div>
-        <div className="flex items-center justify-between border-b border-gray-400">
+        <div className="flex items-center justify-between border-b-2 border-gray-200">
+          {/*Title */}
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Summary
           </h2>
-          <h3 className="text-xs font-medium">Step 7/7</h3>
+          <h3 className="text-xs font-medium">
+            Step {totalSteps}/{totalSteps}
+          </h3>
         </div>
         <p className="text-teal-500 text-sm mt-2">
           Please make sure all the information below matches your needs. If you

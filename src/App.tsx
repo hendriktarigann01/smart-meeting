@@ -8,6 +8,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/:category/:roomSize" element={<ConfigurationPage />} />
+        <Route path="/:category/:roomSize/:step" element={<ConfigurationPage />} />
       </Routes>
     </Router>
   );

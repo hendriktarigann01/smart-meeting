@@ -45,16 +45,33 @@ const screenOptions: ScreenLayoutOption[] = [
 ];
 
 export function ScreenStep() {
-  const { selectedScreenLayout, setSelectedScreenLayout } = useConfigStore();
+  const {
+    selectedScreenLayout,
+    setSelectedScreenLayout,
+    totalSteps,
+    category,
+  } = useConfigStore();
+
+  // Hitung step number berdasarkan kategori
+  const getStepNumber = () => {
+    if (category === "interactive-whiteboard") {
+      return 4; // Step ke-4 untuk IWB
+    } else {
+      return 3; // Step ke-3 untuk Video Wall & LED Indoor
+    }
+  };
 
   return (
     <div className="space-y-4">
       <div>
-        <div className="flex items-center justify-between border-b border-gray-400">
+        <div className="flex items-center justify-between border-b-2 border-gray-200">
+          {/*Title */}
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Screens
           </h2>
-          <h3 className="text-xs font-medium">Step 3/6</h3>
+          <h3 className="text-xs font-medium">
+            Step {getStepNumber()}/{totalSteps}
+          </h3>
         </div>
         <p className="text-teal-500 text-sm mt-2">Screen Size</p>
       </div>

@@ -27,17 +27,18 @@ const implementationOptions: ImplementationOption[] = [
 ];
 
 export function ImplementationStep() {
-  const { selectedImplementation, setSelectedImplementation } =
+  const { selectedImplementation, setSelectedImplementation, totalSteps } =
     useConfigStore();
 
   return (
     <div className="space-y-4">
       <div>
-        <div className="flex items-center justify-between border-b border-gray-400">
+        <div className="flex items-center justify-between border-b-2 border-gray-200">
+          {/*Title */}
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Implementation
           </h2>
-          <h3 className="text-xs font-medium">Step 3/8</h3>
+          <h3 className="text-xs font-medium">Step 3/{totalSteps}</h3>
         </div>
         <p className="text-teal-500 text-sm mt-2">
           Choose your mounting option for the Interactive Whiteboard

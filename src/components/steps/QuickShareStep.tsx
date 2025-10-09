@@ -1,12 +1,13 @@
 import { OptionCard } from "@/components/OptionCard";
+import { CompareModal } from "@/components/modal/CompareModal";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { QuickShareOption } from "@/types";
-import { Info } from "lucide-react";
 
 const quickShareOptions: QuickShareOption[] = [
   {
     id: "qs-l2",
-    title: "QS-L2",
+    title: "Quickshare L2",
+    title_compare: "L2",
     description:
       "Seamless connection for small rooms. Supports up to 2 screens for efficient meetings.",
     image: "/quickshare/qs-12.png",
@@ -20,7 +21,8 @@ const quickShareOptions: QuickShareOption[] = [
   },
   {
     id: "qs-l3",
-    title: "QS-L3",
+    title: "Quickshare L3",
+    title_compare: "L3",
     description:
       "Fast and stable sharing for larger teams. Handles 2–4 screens with smooth performance.",
     image: "/quickshare/qs-13.png",
@@ -34,7 +36,8 @@ const quickShareOptions: QuickShareOption[] = [
   },
   {
     id: "qs-68d",
-    title: "QS-68D",
+    title: "Quickshare 68D",
+    title_compare: "68D",
     description:
       "Professional-grade sharing solution. Connects up to 9 screens simultaneously.",
     image: "/quickshare/qs-68d.png",
@@ -48,7 +51,8 @@ const quickShareOptions: QuickShareOption[] = [
   },
   {
     id: "qs-68e",
-    title: "QS-68E",
+    title: "Quickshare 68E",
+    title_compare: "68E",
     description:
       "Instant and intuitive content sharing. Supports up to 9 screens effortlessly.",
     image: "/quickshare/qs-68e.png",
@@ -63,23 +67,35 @@ const quickShareOptions: QuickShareOption[] = [
 ];
 
 export function QuickShareStep() {
-  const { selectedQuickShare, setSelectedQuickShare } = useConfigStore();
+  const { selectedQuickShare, setSelectedQuickShare, totalSteps, category } =
+    useConfigStore();
+
+  // Hitung step number berdasarkan kategori
+  const getStepNumber = () => {
+    if (category === "interactive-whiteboard") {
+      return 6; // Step ke-6 untuk IWB
+    } else {
+      return 5; // Step ke-5 untuk Video Wall & LED Indoor
+    }
+  };
 
   return (
     <div className="space-y-4">
       <div>
-        <div className="flex items-center justify-between border-b border-gray-400">
+        <div className="flex items-center justify-between border-b-2 border-gray-200">
+          {/*Title */}
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
             Quickshare Configuration
           </h2>
-          <h3 className="text-xs font-medium">Step 5/6</h3>
+          <h3 className="text-xs font-medium">
+            Step {getStepNumber()}/{totalSteps}
+          </h3>
         </div>
         <p className="text-teal-500 text-sm mt-2">
           This product comes with the integrated Quick Share model.
         </p>
-        <div className="flex items-center gap-2 mt-2">
-          <p className="text-gray-500 text-sm">Compare</p>
-          <Info size={16} className="text-gray-400 z-50 cursor-pointer" />
+        <div className="mt-2">
+          <CompareModal options={quickShareOptions} />
         </div>
       </div>
 
