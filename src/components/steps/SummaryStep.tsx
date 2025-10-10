@@ -64,7 +64,7 @@ export function SummaryStep() {
       description: selectedSpeaker?.title,
       image: selectedSpeaker?.image,
     },
-  ].filter(Boolean); // Remove null/undefined items
+  ].filter(Boolean) as SummaryItem[];
 
   return (
     <div className="space-y-4">

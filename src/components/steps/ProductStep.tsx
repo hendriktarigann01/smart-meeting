@@ -1,4 +1,3 @@
-import { OptionCard } from "@/components/OptionCard";
 import { ProductDetailModal } from "@/components/modal/ProductDetailModal";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { LEDProductOption } from "@/types";
@@ -99,11 +98,11 @@ export function ProductStep() {
                       {option.title}
                     </h3>
                     <ProductDetailModal
-                      detailTitle={option.detailTitle}
-                      detailDescription={option.detailDescription}
-                      detailBenefits={option.detailBenefits}
-                      detailRecommendation={option.detailRecommendation}
-                      detailImage={option.detailImage}
+                      detailTitle={option.detailTitle ?? ""}
+                      detailDescription={option.detailDescription ?? ""}
+                      detailBenefits={option.detailBenefits ?? []}
+                      detailRecommendation={option.detailRecommendation ?? ""}
+                      detailImage={option.detailImage ?? ""}
                     />
                   </div>
                   <p className="text-sm text-gray-600">{option.description}</p>

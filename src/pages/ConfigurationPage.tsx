@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { User } from "lucide-react";
+import { Info, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { ProductStep } from "@/components/steps/ProductStep";
@@ -15,6 +15,7 @@ import { ExportModal, ExportFormData } from "@/components/modal/ExportModal";
 import { ProductCategory, RoomSize } from "@/types";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
 // Room data mapping
 const roomData = {
@@ -74,6 +75,11 @@ const getStepTitle = (step: number, category: ProductCategory | null) => {
 
 export function ConfigurationPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [sceneView, setSceneView] = useState<"home" | "incall" | "share">(
+    "home"
+  );
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
+  const infoRef = useRef<HTMLDivElement>(null);
 
   const params = useParams<{
     category: ProductCategory;
@@ -129,6 +135,23 @@ export function ConfigurationPage() {
   useEffect(() => {
     console.log("Step changed to:", currentStep);
   }, [currentStep]);
+
+  // Close tooltip when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (infoRef.current && !infoRef.current.contains(event.target as Node)) {
+        setShowInfoTooltip(false);
+      }
+    };
+
+    if (showInfoTooltip) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showInfoTooltip]);
 
   // Update URL when step changes
   useEffect(() => {
@@ -294,6 +317,74 @@ export function ConfigurationPage() {
         {/* Left Side - Room Preview */}
         <div className="flex-1 flex items-center justify-center bg-gray-100 rounded-2xl relative">
           <div className="w-full">
+            {/* Meeting Scene Menubar */}
+            {getStepTitle(currentStep, category) === "screens" && (
+              <div className="absolute top-0 left-2 w-60 p-3 z-50">
+                <div
+                  className="flex items-center justify-center h-7 gap-2 mb-3 relative"
+                  ref={infoRef}
+                >
+                  <p className="text-sm font-medium text-gray-600">
+                    Meeting Scene
+                  </p>
+                  <button
+                    onClick={() => setShowInfoTooltip(!showInfoTooltip)}
+                    className="text-gray-600 hover:text-gray-700 cursor-pointer transition-colors"
+                  >
+                    <Info size={16} />
+                  </button>
+
+                  {/* Tooltip */}
+                  {showInfoTooltip && (
+                    <div className="absolute left-4/5 ml-2 top-0 w-80 h-7 bg-black/40 text-white text-xs rounded-sm p-3 z-50 flex items-center justify-center text-center">
+                      <p>
+                        Display screen previews for various meeting scenarios
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <Menubar className="w-full h-10 bg-white">
+                  <MenubarMenu>
+                    <MenubarTrigger
+                      className={`flex-1 justify-center font-light ${
+                        sceneView === "home"
+                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
+                          : ""
+                      }`}
+                      onClick={() => setSceneView("home")}
+                    >
+                      Home
+                    </MenubarTrigger>
+                  </MenubarMenu>
+                  <MenubarMenu>
+                    <MenubarTrigger
+                      className={`flex-1 justify-center font-light ${
+                        sceneView === "incall"
+                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
+                          : ""
+                      }`}
+                      onClick={() => setSceneView("incall")}
+                    >
+                      In Call
+                    </MenubarTrigger>
+                  </MenubarMenu>
+                  <MenubarMenu>
+                    <MenubarTrigger
+                      className={`flex-1 justify-center font-light ${
+                        sceneView === "share"
+                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
+                          : ""
+                      }`}
+                      onClick={() => setSceneView("share")}
+                    >
+                      Share
+                    </MenubarTrigger>
+                  </MenubarMenu>
+                </Menubar>
+              </div>
+            )}
+
             <div className="w-full mx-auto aspect-[4/2] py-10 flex items-center justify-center relative">
               <img
                 src={`/room/${roomSize}.png`}
