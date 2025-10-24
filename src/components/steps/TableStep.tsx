@@ -1,31 +1,6 @@
 import { OptionCard } from "@/components/OptionCard";
 import { useConfigStore } from "@/stores/useConfigStore";
-import { TableLayoutOption } from "@/types";
-
-const tableOptions: TableLayoutOption[] = [
-  {
-    id: "rectangular",
-    shape: "rectangular",
-    title: "Rectangular",
-    description: "Classic and versatile design suitable for most spaces.",
-    image: "/table/rectangular.png",
-  },
-  {
-    id: "tapered",
-    shape: "tapered",
-    title: "Tapered",
-    description: "Modern style with a narrower top or bottom for a sleek look.",
-    image: "/table/tapered.png",
-  },
-  {
-    id: "round",
-    shape: "round",
-    title: "Round",
-    description: "Ideal for creating a cozy and social atmosphere.",
-    image: "/table/round.png",
-  },
-  
-];
+import { TableLayoutData } from "@/models/table";
 
 export function TableStep() {
   const { selectedTableLayout, setSelectedTableLayout, totalSteps, roomSize } =
@@ -74,7 +49,7 @@ export function TableStep() {
                     [&::-webkit-scrollbar-thumb]:bg-[#3AAFA9] 
                     [&::-webkit-scrollbar-thumb]:rounded-full"
       >
-        {tableOptions.map((option) => (
+        {TableLayoutData.map((option) => (
           <OptionCard
             key={option.id}
             title={option.title}

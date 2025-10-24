@@ -25,7 +25,7 @@ export function SummaryStep() {
     {
       id: "product",
       title: "Product",
-      description: selectedProduct?.title,
+      description: selectedProduct?.header,
       image: selectedProduct?.image,
     },
     selectedTableLayout && {

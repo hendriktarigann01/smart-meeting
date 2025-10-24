@@ -21,7 +21,7 @@ export function OptionCard({
     <Card
       onClick={onSelect}
       className={`
-        transition-all duration-200 cursor-pointer
+       cursor-pointer
         ${isSelected ? "border-2 border-teal-500" : "border-2 border-gray-200"}
       `}
     >

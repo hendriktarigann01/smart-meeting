@@ -22,7 +22,7 @@ export function ProductMenu({ onCategoryChange }: ProductMenuProps) {
   };
 
   return (
-    <Menubar className="border-0 bg-gray-200 dark:bg-gray-800 p-1 h-auto">
+    <Menubar className="border-0 bg-gray-100 p-1 h-auto">
       {categories.map((category) => (
         <MenubarMenu key={category.value}>
           <MenubarTrigger
@@ -32,7 +32,7 @@ export function ProductMenu({ onCategoryChange }: ProductMenuProps) {
                   ${
                     activeCategory === category.value
                       ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
-                      : "text-gray-700 border-2 hover:border-teal-500  data-[state=open]:bg-gray-200"
+                      : "text-gray-700 hover:ring-1 hover:ring-teal-500 "
                   }
             `}
           >

@@ -5,41 +5,7 @@ import { RoomCard } from "@/components/RoomCard";
 import { MeetingRoom, ProductCategory } from "@/types";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
-const meetingRooms: MeetingRoom[] = [
-  {
-    id: "1",
-    title: "Small Meeting Room",
-    size: "small-room",
-    capacity: "2-5 People",
-    dimensions: "3m x 3m",
-    image: "/room/homepage/small-room.png",
-  },
-  {
-    id: "2",
-    title: "Medium Meeting Room",
-    size: "medium-room",
-    capacity: "6-8 People",
-    dimensions: "5m x 4m",
-    image: "/room/homepage/medium-room.png",
-  },
-  {
-    id: "3",
-    title: "Large Meeting Room",
-    size: "large-room",
-    capacity: "10-12 People",
-    dimensions: "6m x 5m",
-    image: "/room/homepage/large-room.png",
-  },
-  {
-    id: "4",
-    title: "Auditorium",
-    size: "auditorium",
-    capacity: "14-20 People",
-    dimensions: "8m x 6m",
-    image: "/room/homepage/auditorium.png",
-  },
-];
+import { meetingRooms } from "@/models/home";
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -51,7 +17,6 @@ export function HomePage() {
   };
 
   const handleRoomSelect = (room: MeetingRoom) => {
-    // Navigate to configuration page
     navigate(`/${selectedCategory}/${room.size}`);
   };
 
@@ -71,11 +36,11 @@ export function HomePage() {
             shape spaces that inspire performance.
           </p>
         </div>
-        {/* Product Category Menu */}
+        {/* Product Category */}
         <div className="flex justify-center">
           <ProductMenu onCategoryChange={handleCategoryChange} />
         </div>
-        {/* Room Cards Grid */}
+        {/* Room Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {meetingRooms.map((room) => (
             <RoomCard key={room.id} room={room} onSelect={handleRoomSelect} />

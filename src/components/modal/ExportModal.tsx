@@ -205,7 +205,7 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
                 <div className="flex justify-center">
                   <Button
                     type="submit"
-                    className="w-1/3 py-5 bg-teal-500 hover:bg-teal-600 text-white font-normal text-sm rounded-lg transition-colors cursor-pointer"
+                    className="w-1/3 py-5 bg-teal-500 hover:bg-teal-600 text-white cursor-pointer font-normal text-sm rounded-lg transition-colors cursor-pointer"
                   >
                     Export to PDF
                   </Button>

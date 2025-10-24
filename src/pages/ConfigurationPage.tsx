@@ -11,35 +11,13 @@ import { CameraStep } from "@/components/steps/CameraStep";
 import { QuickShareStep } from "@/components/steps/QuickShareStep";
 import { SpeakerStep } from "@/components/steps/SpeakerStep";
 import { SummaryStep } from "@/components/steps/SummaryStep";
+import { ScreenOverlay } from "@/components/overlay/ScreenOverlay";
+import { roomData } from "@/models/data";
 import { ExportModal, ExportFormData } from "@/components/modal/ExportModal";
 import { ProductCategory, RoomSize } from "@/types";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
-
-// Room data mapping
-const roomData = {
-  "small-room": {
-    title: "Small Meeting Room",
-    capacity: "2-5 People",
-    dimensions: "3m x 3m",
-  },
-  "medium-room": {
-    title: "Medium Meeting Room",
-    capacity: "6-8 People",
-    dimensions: "5m x 4m",
-  },
-  "large-room": {
-    title: "Large Meeting Room",
-    capacity: "10-12 People",
-    dimensions: "6m x 5m",
-  },
-  auditorium: {
-    title: "Auditorium",
-    capacity: "14-20 People",
-    dimensions: "8m x 6m",
-  },
-};
 
 // Step title mapping
 const getStepTitle = (step: number, category: ProductCategory | null) => {
@@ -79,7 +57,12 @@ export function ConfigurationPage() {
     "home"
   );
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
+  const [previewDimensions, setPreviewDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
   const infoRef = useRef<HTMLDivElement>(null);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
 
   const params = useParams<{
     category: ProductCategory;
@@ -89,7 +72,6 @@ export function ConfigurationPage() {
 
   const category = params.category;
   const roomSize = params.roomSize;
-  const stepParam = params.step;
 
   const navigate = useNavigate();
 
@@ -99,7 +81,6 @@ export function ConfigurationPage() {
     category: storeCategory,
     roomSize: storeRoomSize,
     setRoomConfig,
-    setCurrentStep,
     nextStep: storeNextStep,
     prevStep: storePrevStep,
     selectedProduct,
@@ -113,10 +94,10 @@ export function ConfigurationPage() {
 
   // Initialize configuration ONCE
   useEffect(() => {
-    if (category && roomSize && roomData[roomSize]) {
+    if (category && roomSize && roomData.rooms[roomSize]) {
       // Only set if not already set or if different
       if (storeCategory !== category || storeRoomSize !== roomSize) {
-        const room = roomData[roomSize];
+        const room = roomData.rooms[roomSize];
         console.log("Initializing room config:", category, roomSize);
         setRoomConfig(
           category,
@@ -129,12 +110,42 @@ export function ConfigurationPage() {
     } else if (!category || !roomSize) {
       navigate("/");
     }
-  }, [category, roomSize, storeCategory, storeRoomSize]);
+  }, [
+    category,
+    roomSize,
+    storeCategory,
+    storeRoomSize,
+    navigate,
+    setRoomConfig,
+  ]);
 
   // Monitor step changes
   useEffect(() => {
     console.log("Step changed to:", currentStep);
   }, [currentStep]);
+
+  // Measure preview container dimensions
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (previewContainerRef.current) {
+        const rect = previewContainerRef.current.getBoundingClientRect();
+        // Subtract padding (40px each side from inset-10)
+        const width = rect.width - 80;
+        const height = rect.height - 80;
+        setPreviewDimensions({ width, height });
+        console.log("Preview dimensions:", { width, height });
+      }
+    };
+
+    // Initial measurement with delay to ensure render
+    setTimeout(updateDimensions, 100);
+
+    window.addEventListener("resize", updateDimensions);
+
+    return () => {
+      window.removeEventListener("resize", updateDimensions);
+    };
+  }, []);
 
   // Close tooltip when clicking outside
   useEffect(() => {
@@ -171,7 +182,7 @@ export function ConfigurationPage() {
     if (category === "interactive-whiteboard") {
       switch (currentStep) {
         case 1:
-          return <ProductStep />;
+          return <ProductStep category={category} stepNumber={currentStep} />;
         case 2:
           return <TableStep />;
         case 3:
@@ -192,7 +203,7 @@ export function ConfigurationPage() {
     } else if (category === "video-wall" || category === "led-indoor") {
       switch (currentStep) {
         case 1:
-          return <ProductStep />;
+          return <ProductStep category={category} stepNumber={currentStep} />;
         case 2:
           return <TableStep />;
         case 3:
@@ -279,15 +290,16 @@ export function ConfigurationPage() {
 
   const handleExportPDF = (data: ExportFormData) => {
     console.log("Exporting PDF with data:", data);
-    // TODO: Implement PDF generation logic here
-    // You can access all configuration data from useConfigStore here
     setIsExportModalOpen(false);
   };
 
   if (!category || !roomSize) return null;
 
-  const room = roomData[roomSize];
+  const room = roomData.rooms[roomSize];
   const isLastStep = currentStep === totalSteps;
+
+  // Get room image - use rectangular layout for small/medium/large, baseImage for auditorium
+  const roomImage = room.layouts?.rectangular || room.baseImage;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -297,9 +309,9 @@ export function ConfigurationPage() {
       <div className="px-5 ">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-xl font-medium text-gray-800">{room.title}</h1>
-          <div className="flex items-center gap-2 px-3 py-1.5 h-8 bg-teal-100 text-teal-700 rounded-md text-sm font-medium">
-            <User size={16} />
+          <div className="flex items-center gap-2 px-3 py-1.5 h-8 bg-[#33AAAA]/10 text-teal-600 rounded-md text-sm font-medium">
             <span>{room.capacity}</span>
+            <User size={16} />
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 h-8 bg-gray-100 text-gray-700 rounded-md text-sm">
             <span>{room.dimensions}</span>
@@ -317,81 +329,24 @@ export function ConfigurationPage() {
         {/* Left Side - Room Preview */}
         <div className="flex-1 flex items-center justify-center bg-gray-100 rounded-2xl relative">
           <div className="w-full">
-            {/* Meeting Scene Menubar */}
-            {getStepTitle(currentStep, category) === "screens" && (
-              <div className="absolute top-0 left-2 w-60 p-3 z-50">
-                <div
-                  className="flex items-center justify-center h-7 gap-2 mb-3 relative"
-                  ref={infoRef}
-                >
-                  <p className="text-sm font-medium text-gray-600">
-                    Meeting Scene
-                  </p>
-                  <button
-                    onClick={() => setShowInfoTooltip(!showInfoTooltip)}
-                    className="text-gray-600 hover:text-gray-700 cursor-pointer transition-colors"
-                  >
-                    <Info size={16} />
-                  </button>
-
-                  {/* Tooltip */}
-                  {showInfoTooltip && (
-                    <div className="absolute left-4/5 ml-2 top-0 w-80 h-7 bg-black/40 text-white text-xs rounded-sm p-3 z-50 flex items-center justify-center text-center">
-                      <p>
-                        Display screen previews for various meeting scenarios
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <Menubar className="w-full h-10 bg-white">
-                  <MenubarMenu>
-                    <MenubarTrigger
-                      className={`flex-1 justify-center font-light ${
-                        sceneView === "home"
-                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
-                          : ""
-                      }`}
-                      onClick={() => setSceneView("home")}
-                    >
-                      Home
-                    </MenubarTrigger>
-                  </MenubarMenu>
-                  <MenubarMenu>
-                    <MenubarTrigger
-                      className={`flex-1 justify-center font-light ${
-                        sceneView === "incall"
-                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
-                          : ""
-                      }`}
-                      onClick={() => setSceneView("incall")}
-                    >
-                      In Call
-                    </MenubarTrigger>
-                  </MenubarMenu>
-                  <MenubarMenu>
-                    <MenubarTrigger
-                      className={`flex-1 justify-center font-light ${
-                        sceneView === "share"
-                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
-                          : ""
-                      }`}
-                      onClick={() => setSceneView("share")}
-                    >
-                      Share
-                    </MenubarTrigger>
-                  </MenubarMenu>
-                </Menubar>
-              </div>
-            )}
-
-            <div className="w-full mx-auto aspect-[4/2] py-10 flex items-center justify-center relative">
+            <div
+              ref={previewContainerRef}
+              className="w-full mx-auto aspect-[4/2] py-10 flex items-center justify-center relative"
+            >
+              {/* Room Size */}
               <img
-                src={`/room/${roomSize}.png`}
+                src={roomImage}
                 alt={room.title}
                 className="w-full h-full object-contain"
               />
-
+              {/* Screen Overlay */}
+              {previewDimensions.width > 0 && (
+                <ScreenOverlay
+                  sceneView={sceneView}
+                  containerWidth={previewDimensions.width}
+                  containerHeight={previewDimensions.height}
+                />
+              )}
               {/* Overlay grid */}
               <div className="absolute inset-10 grid grid-cols-24 grid-rows-12 border pointer-events-none">
                 {Array.from({ length: 24 * 12 }).map((_, i) => (
@@ -422,7 +377,7 @@ export function ConfigurationPage() {
                   isLastStep ? () => setIsExportModalOpen(true) : nextStep
                 }
                 disabled={!isLastStep && !canProceed()}
-                className="flex-1 cursor-pointer bg-teal-500 hover:bg-teal-600 text-white"
+                className="flex-1 bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
               >
                 {isLastStep ? "Download to PDF" : "Next"}
               </Button>

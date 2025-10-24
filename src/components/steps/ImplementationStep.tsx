@@ -1,30 +1,6 @@
 import { OptionCard } from "@/components/OptionCard";
 import { useConfigStore } from "@/stores/useConfigStore";
-import { ImplementationOption } from "@/types";
-
-const implementationOptions: ImplementationOption[] = [
-  {
-    id: "wall-mount",
-    title: "Wall Mount",
-    description:
-      "Interactive Whiteboards can be mounted on walls for space-saving solutions, providing a modern look and optimal stability.",
-    image: "/implementation/wall-mount.png",
-  },
-  {
-    id: "floor-stand",
-    title: "Floor Stand",
-    description:
-      "With a sturdy floor stand, the Interactive Whiteboard can be placed flexibly in various rooms without the need for permanent installation.",
-    image: "/implementation/floor-stand.png",
-  },
-  {
-    id: "wheel-stand",
-    title: "Wheel Stand",
-    description:
-      "Designed for high mobility, the Wheel Stand type allows the Interactive Whiteboard to be easily moved between rooms.",
-    image: "/implementation/wheel-stand.png",
-  },
-];
+import { ImplementationData } from "@/models/implementation";
 
 export function ImplementationStep() {
   const { selectedImplementation, setSelectedImplementation, totalSteps } =
@@ -52,7 +28,7 @@ export function ImplementationStep() {
                     [&::-webkit-scrollbar-thumb]:bg-[#3AAFA9] 
                     [&::-webkit-scrollbar-thumb]:rounded-full"
       >
-        {implementationOptions.map((option) => (
+        {ImplementationData.map((option) => (
           <OptionCard
             key={option.id}
             title={option.title}

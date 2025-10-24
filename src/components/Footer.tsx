@@ -6,7 +6,7 @@ export default function Footer() {
         href="https://mjsolution.co.id"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500 transition-colors"
+        className="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-500 transition-colors"
       >
         <Globe size={16} />
         <span>mjsolution.co.id</span>
@@ -14,7 +14,7 @@ export default function Footer() {
 
       <a
         href="tel:+6281111122492"
-        className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-teal-500 transition-colors"
+        className="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-500 transition-colors"
       >
         <Phone size={16} />
         <span>(+62) 811-1122-492</span>

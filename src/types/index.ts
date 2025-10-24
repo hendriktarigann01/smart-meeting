@@ -1,4 +1,4 @@
-// Meeting Room Types
+// Meeting Room Types 
 export type RoomSize =
   | "small-room"
   | "medium-room"
@@ -19,24 +19,32 @@ export interface MeetingRoom {
   image: string;
 }
 
-export interface Product {
-  id: string;
-  name: string;
-  category: ProductCategory;
-  description?: string;
-}
-
+// Product
 export interface LEDProductOption {
   id: string;
-  type: "modul" | "cabinet";
-  title: string;
-  description: string;
+  type: "modul" | "cabinet" | "kmi7000" | "kmi7000pro" | "kmi8000" | string;
+  header: string;
+  subHeader?: string;
   image?: string;
+  description: string;
   detailTitle?: string;
+  detailSubTitle?: string;
   detailDescription?: string;
   detailBenefits?: string[];
   detailRecommendation?: string;
   detailImage?: string;
+  specifications?: {
+    android?: string;
+    processor?: string;
+    windows?: string;
+    camera?: string;
+    ram?: string;
+    microphone?: string;
+    storage?: string;
+    aiNoiseReduction?: string;
+  };
+  linkMoreInfo?: string;
+  brochureLink?: string;
 }
 
 export interface TableLayoutOption {
@@ -54,11 +62,28 @@ export interface ImplementationOption {
   image?: string;
 }
 
+export interface LEDSpecifications {
+  refreshRate: string;
+  brightness: string;
+  moduleSize: string;
+  modulePixels: string;
+  moduleResolution: string;
+  moduleWeight: string;
+  cabinetSize: string;
+  maxPower: string;
+  cabinetResolution: string;
+  cabinetWeight: string;
+}
+
 export interface ScreenLayoutOption {
   id: string;
   title: string;
   description: string;
   image?: string;
+  detailSubtitle?: string;
+  detailDescription?: string;
+  specifications?: LEDSpecifications;
+  brochureUrl?: string;
 }
 
 export interface CameraOption {

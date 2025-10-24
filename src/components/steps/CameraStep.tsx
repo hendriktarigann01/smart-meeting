@@ -10,12 +10,12 @@ const cameraOptions: CameraOption[] = [
       "High-performance camera with autofocus zoom, full connectivity, and flexible mounting perfect for streaming, conferences, and presentations.",
     image: "/camera/h3-p3m.png",
   },
-  {
-    id: "no-camera",
-    title: "No Camera",
-    description: "No camera included",
-    image: "/camera/no-camera.png",
-  },
+  // {
+  //   id: "no-camera",
+  //   title: "No Camera",
+  //   description: "No camera included",
+  //   image: "/camera/no-camera.png",
+  // },
 ];
 
 export function CameraStep() {

@@ -6,32 +6,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-interface QuickShareSpec {
-  id: string;
-  title: string;
-  title_compare: string;
-  image?: string;
-  resolution: string;
-  simultaneous_connections: string;
-  os_compatibility: string;
-  wireless_range: string;
-  image_segmentation: string;
-  connection_type: string;
-  split_screen: string;
-}
+import { QuickShareOption } from "@/types/index";
 
 interface CompareModalProps {
-  options: QuickShareSpec[];
+  options: QuickShareOption[];
 }
 
 export function CompareModal({ options }: CompareModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <p className="text-gray-500 text-xs">Compare</p>
-          <Info size={16} className="text-gray-400 cursor-pointer" />
+        <button className="flex items-center text-xs gap-2 text-gray-400 hover:text-gray-500 cursor-pointer">
+          <p>Compare</p>
+          <Info size={16} />
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-5xl max-h-[90vh] p-10 overflow-y-auto">

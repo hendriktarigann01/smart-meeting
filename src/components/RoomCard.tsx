@@ -44,7 +44,7 @@ export function RoomCard({ room, onSelect }: RoomCardProps) {
 
           <button
             onClick={() => onSelect?.(room)}
-            className="w-10 h-10 rounded-full bg-teal-500 hover:bg-teal-600 text-white flex items-center justify-center"
+            className="w-10 h-10 rounded-full bg-teal-500 hover:bg-teal-600 text-white cursor-pointer flex items-center justify-center"
           >
             <ArrowUpRight size={20} />
           </button>
