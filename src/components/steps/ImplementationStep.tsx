@@ -1,10 +1,13 @@
 import { OptionCard } from "@/components/OptionCard";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { ImplementationData } from "@/models/implementation";
+import { autoSelect } from "@/utils/autoSelect";
 
 export function ImplementationStep() {
   const { selectedImplementation, setSelectedImplementation, totalSteps } =
     useConfigStore();
+  
+  autoSelect(ImplementationData, selectedImplementation, setSelectedImplementation);
 
   return (
     <div className="space-y-4">

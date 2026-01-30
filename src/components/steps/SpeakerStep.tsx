@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { OptionCard } from "@/components/OptionCard";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { SpeakerOption } from "@/types";
+import { autoSelect } from "@/utils/autoSelect";
 
 const speakerOptions: SpeakerOption[] = [
   {
@@ -27,6 +29,18 @@ export function SpeakerStep() {
     roomSize,
   } = useConfigStore();
 
+  // Auto-select ceiling speaker for auditorium
+  useEffect(() => {
+    if (roomSize === "auditorium" && !selectedSpeaker) {
+      const ceilingSpeaker = speakerOptions.find(
+        (opt) => opt.id === "ceiling-speaker",
+      );
+      if (ceilingSpeaker) {
+        setSelectedSpeaker(ceilingSpeaker);
+      }
+    }
+  }, [roomSize, selectedSpeaker, setSelectedSpeaker]);
+
   // Hitung step number berdasarkan kategori
   const getStepNumber = () => {
     if (category === "interactive-whiteboard") {
@@ -35,6 +49,8 @@ export function SpeakerStep() {
       return 6; // Step ke-6 untuk Video Wall & LED Indoor
     }
   };
+
+  autoSelect(speakerOptions, selectedSpeaker, setSelectedSpeaker);
 
   // Auditorium tidak punya Audio Conference System
   if (roomSize === "auditorium") {
@@ -54,7 +70,7 @@ export function SpeakerStep() {
           </p>
         </div>
         <div className="flex items-center justify-center py-12 text-gray-400">
-          <p>Ceiling Speaker will be automatically configured for auditorium</p>
+          <p>✓ Ceiling Speaker automatically configured for auditorium</p>
         </div>
       </div>
     );
@@ -73,7 +89,7 @@ export function SpeakerStep() {
           </h3>
         </div>
         <p className="text-teal-500 text-sm mt-2">
-          This product comes with the integrated speaker model
+          Choose your speaker configuration
         </p>
       </div>
 

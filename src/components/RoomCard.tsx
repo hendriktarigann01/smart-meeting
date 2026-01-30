@@ -10,10 +10,10 @@ interface RoomCardProps {
 export function RoomCard({ room, onSelect }: RoomCardProps) {
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-gray-100 dark:bg-gray-800 border-0">
-      <CardContent className="p-6">
+      <CardContent className="p-3 lg:p-6">
         {/* Header */}
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
+          <h3 className="sm:text-sm lg:text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">
             {room.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -41,12 +41,12 @@ export function RoomCard({ room, onSelect }: RoomCardProps) {
             />
             <span>{room.dimensions}</span>
           </div>
-
+          
           <button
             onClick={() => onSelect?.(room)}
-            className="w-10 h-10 rounded-full bg-teal-500 hover:bg-teal-600 text-white cursor-pointer flex items-center justify-center"
+            className="flex items-center justify-center cursor-pointer rounded-full bg-teal-500 hover:bg-teal-600 text-white w-7 h-7 lg:w-10 lg:h-10"
           >
-            <ArrowUpRight size={20} />
+            <ArrowUpRight className="w-3 h-3 lg:w-5 lg:h-5" />
           </button>
         </div>
       </CardContent>

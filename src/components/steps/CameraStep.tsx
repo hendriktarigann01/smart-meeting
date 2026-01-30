@@ -1,5 +1,6 @@
 import { OptionCard } from "@/components/OptionCard";
 import { useConfigStore } from "@/stores/useConfigStore";
+import { autoSelect } from "@/utils/autoSelect";
 import { CameraOption } from "@/types";
 
 const cameraOptions: CameraOption[] = [
@@ -10,12 +11,13 @@ const cameraOptions: CameraOption[] = [
       "High-performance camera with autofocus zoom, full connectivity, and flexible mounting perfect for streaming, conferences, and presentations.",
     image: "/camera/h3-p3m.png",
   },
-  // {
-  //   id: "no-camera",
-  //   title: "No Camera",
-  //   description: "No camera included",
-  //   image: "/camera/no-camera.png",
-  // },
+  {
+    id: "no-camera",
+    title: "No Camera",
+    description:
+      "Skip camera configuration. You can add a camera later or use an external camera solution.",
+    image: "/camera/no-cam.png",
+  },
 ];
 
 export function CameraStep() {
@@ -31,6 +33,8 @@ export function CameraStep() {
     }
   };
 
+  autoSelect(cameraOptions, selectedCamera, setSelectedCamera);
+
   return (
     <div className="space-y-4">
       <div>
@@ -44,7 +48,7 @@ export function CameraStep() {
           </h3>
         </div>
         <p className="text-teal-500 text-sm mt-2">
-          This product comes with the integrated camera model
+          Choose your camera configuration
         </p>
       </div>
 

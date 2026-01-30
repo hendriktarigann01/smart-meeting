@@ -114,6 +114,7 @@ export const ProductData = {
     {
       id: "kmi8000",
       type: "kmi8000",
+      name: "KMI 8000",
       header: "Product Selection",
       subHeader: "Choose between Video Wall",
       image: "/product/video-wall.png",

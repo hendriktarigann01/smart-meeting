@@ -1,6 +1,7 @@
 import { OptionCard } from "@/components/OptionCard";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { TableLayoutData } from "@/models/table";
+import { autoSelect } from "@/utils/autoSelect";
 
 export function TableStep() {
   const { selectedTableLayout, setSelectedTableLayout, totalSteps, roomSize } =
@@ -29,6 +30,19 @@ export function TableStep() {
     );
   }
 
+  // Filter table options based on room size
+  const availableTableLayouts = TableLayoutData.filter((option) => {
+    if (roomSize === "large-room") {
+      // Large room: show rectangular, tapered, and roomshaped (no round)
+      return option.shape !== "round";
+    } else {
+      // Small and medium rooms: show rectangular, tapered, and round (no roomshaped)
+      return option.shape !== "roomshaped";
+    }
+  });
+
+  autoSelect(availableTableLayouts, selectedTableLayout, setSelectedTableLayout);
+
   return (
     <div className="space-y-4">
       <div>
@@ -49,7 +63,7 @@ export function TableStep() {
                     [&::-webkit-scrollbar-thumb]:bg-[#3AAFA9] 
                     [&::-webkit-scrollbar-thumb]:rounded-full"
       >
-        {TableLayoutData.map((option) => (
+        {availableTableLayouts.map((option) => (
           <OptionCard
             key={option.id}
             title={option.title}

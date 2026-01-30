@@ -141,28 +141,28 @@ export const ScreenData = {
   ],
   "interactive-whiteboard": [
     {
-      id: '65"',
+      id: "65inch", 
       title: '65"',
       description:
         "A practical size for small meeting rooms or classrooms with limited space.",
       image: "/screen/65inch.png",
     },
     {
-      id: '75"',
+      id: "75inch", 
       title: '75"',
       description:
         "An ideal choice for medium-sized conference rooms needing a wider display.",
       image: "/screen/75inch.png",
     },
     {
-      id: '86"',
+      id: "86inch",
       title: '86"',
       description:
         "Offers optimal visibility in larger spaces, perfect for collaborative presentations.",
       image: "/screen/86inch.png",
     },
     {
-      id: '98"',
+      id: "98inch",
       title: '98"',
       description:
         "An extra-large screen for maximum visual impact in auditoriums or large presentation areas.",
@@ -171,14 +171,14 @@ export const ScreenData = {
   ],
   "video-wall": [
     {
-      id: '46"',
+      id: "46inch", 
       title: '46"',
       description:
         "Providing practical solutions for small meeting rooms or classrooms with limited space, while still providing visual clarity and comfort.",
       image: "/screen/46inch.png",
     },
     {
-      id: '55"',
+      id: "55inch", 
       title: '55"',
       description:
         "The ideal choice for medium-sized conference rooms that require a wider display area, supporting more effective collaboration and presentations.",

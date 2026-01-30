@@ -9,29 +9,31 @@ import {
 } from "@/components/ui/dialog";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
+import { generateConfigurationPDF } from "@/utils/generatePDF";
 
 interface ExportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onExport: (data: ExportFormData) => void;
+  previewRef?: React.RefObject<HTMLDivElement>; // ADDED: For capturing room preview screenshot
 }
 
 export interface ExportFormData {
   projectName: string;
-  yourName: string;
+  name: string;
   phone: string;
   email: string;
 }
 
-export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
+export function ExportModal({ isOpen, onClose, previewRef }: ExportModalProps) {
   const [formData, setFormData] = useState<ExportFormData>({
     projectName: "",
-    yourName: "",
+    name: "",
     phone: "",
     email: "",
   });
 
   const [errors, setErrors] = useState<Partial<ExportFormData>>({});
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleChange = (field: keyof ExportFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -48,8 +50,8 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
       newErrors.projectName = "Project name is required";
     }
 
-    if (!formData.yourName.trim()) {
-      newErrors.yourName = "Your name is required";
+    if (!formData.name.trim()) {
+      newErrors.name = "Your name is required";
     }
 
     if (!formData.phone.trim()) {
@@ -66,18 +68,37 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validateForm()) {
-      onExport(formData);
-      // Reset form
+    e.stopPropagation(); // Prevent event bubbling
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      // Generate PDF
+      await generateConfigurationPDF({
+        formData,
+        previewRef, // ADDED: Pass preview ref for screenshot capture
+      });
+
+      // Reset form and close modal on success
       setFormData({
         projectName: "",
-        yourName: "",
+        name: "",
         phone: "",
         email: "",
       });
       setErrors({});
+      onClose();
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -93,7 +114,6 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
                 alt="Technician"
                 className="w-full h-auto object-contain"
                 onError={(e) => {
-                  // Fallback if image doesn't exist
                   e.currentTarget.style.display = "none";
                 }}
               />
@@ -126,11 +146,12 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
                       handleChange("projectName", e.target.value)
                     }
                     placeholder="ex. Building Project"
+                    disabled={isGenerating}
                     className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all ${
                       errors.projectName
                         ? "border-red-500"
                         : "border-gray-300 focus:border-teal-500"
-                    }`}
+                    } ${isGenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                   />
                   {errors.projectName && (
                     <p className="text-red-500 text-xs mt-1">
@@ -146,19 +167,18 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
                   </label>
                   <input
                     type="text"
-                    value={formData.yourName}
-                    onChange={(e) => handleChange("yourName", e.target.value)}
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
                     placeholder="ex. Daniel Smantha"
+                    disabled={isGenerating}
                     className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all ${
-                      errors.yourName
+                      errors.name
                         ? "border-red-500"
                         : "border-gray-300 focus:border-teal-500"
-                    }`}
+                    } ${isGenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                   />
-                  {errors.yourName && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.yourName}
-                    </p>
+                  {errors.name && (
+                    <p className="text-red-500 text-xs mt-1">{errors.name}</p>
                   )}
                 </div>
 
@@ -172,6 +192,7 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
                     value={formData.phone}
                     onChange={(phone) => handleChange("phone", phone)}
                     placeholder="ex. 0867xxxxxxx"
+                    disabled={isGenerating}
                     className={errors.phone ? "phone-input-error" : ""}
                     inputClassName="w-full"
                   />
@@ -190,11 +211,12 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
                     value={formData.email}
                     onChange={(e) => handleChange("email", e.target.value)}
                     placeholder="ex. samantha@mj.com"
+                    disabled={isGenerating}
                     className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all ${
                       errors.email
                         ? "border-red-500"
                         : "border-gray-300 focus:border-teal-500"
-                    }`}
+                    } ${isGenerating ? "opacity-50 cursor-not-allowed" : ""}`}
                   />
                   {errors.email && (
                     <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -205,9 +227,10 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
                 <div className="flex justify-center">
                   <Button
                     type="submit"
-                    className="w-1/3 py-5 bg-teal-500 hover:bg-teal-600 text-white cursor-pointer font-normal text-sm rounded-lg transition-colors cursor-pointer"
+                    disabled={isGenerating}
+                    className="w-1/3 py-5 bg-teal-500 hover:bg-teal-600 text-white font-normal text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Export to PDF
+                    {isGenerating ? "Generating..." : "Export to PDF"}
                   </Button>
                 </div>
               </form>
@@ -216,42 +239,41 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
         </div>
 
         <style>{`
-                .react-international-phone-input-container {
-                    width: 100%;
-                }
-                
-                .react-international-phone-input-container .react-international-phone-input {
-                    width: 100%;
-                    padding: 0.75rem 1rem;
-                    border: 1px solid rgb(209 213 219);
-                    font-size: 1rem;
-                    transition: all 0.2s;
-                }
-                
-                .react-international-phone-input-container .react-international-phone-input:focus {
-                    outline: none;
-                    border-color: rgb(20 184 166);
-                    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
-                }
-                
-                .react-international-phone-country-selector-button {
-                    border: 1px solid rgb(209 213 219);
-                    border-radius: 0.5rem 0 0 0.5rem;
-                    padding: 0.75rem;
-                }
-                
-                .phone-input-error .react-international-phone-input,
-                .phone-input-error .react-international-phone-country-selector-button {
-                    border-color: rgb(239 68 68);
-                }
+          .react-international-phone-input-container {
+            width: 100%;
+          }
+          
+          .react-international-phone-input-container .react-international-phone-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgb(209 213 219);
+            font-size: 1rem;
+            transition: all 0.2s;
+          }
+          
+          .react-international-phone-input-container .react-international-phone-input:focus {
+            outline: none;
+            border-color: rgb(20 184 166);
+            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+          }
+          
+          .react-international-phone-country-selector-button {
+            border: 1px solid rgb(209 213 219);
+            border-radius: 0.5rem 0 0 0.5rem;
+            padding: 0.75rem;
+          }
+          
+          .phone-input-error .react-international-phone-input,
+          .phone-input-error .react-international-phone-country-selector-button {
+            border-color: rgb(239 68 68);
+          }
 
-                /* 🔽 Batasi tinggi dropdown */
-                .react-international-phone-country-selector-dropdown {
-                    max-height: 150px; /* ubah sesuai kebutuhan, misal 180px, 220px */
-                    overflow-y: auto;
-                    scrollbar-width: thin;
-                }
-                `}</style>
+          .react-international-phone-country-selector-dropdown {
+            max-height: 150px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+          }
+        `}</style>
       </DialogContent>
     </Dialog>
   );

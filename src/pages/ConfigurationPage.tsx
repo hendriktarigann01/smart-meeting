@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Info, User } from "lucide-react";
+import { getContainerMode } from "@/constants/layout";
 import { Button } from "@/components/ui/button";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { ProductStep } from "@/components/steps/ProductStep";
@@ -12,12 +13,17 @@ import { QuickShareStep } from "@/components/steps/QuickShareStep";
 import { SpeakerStep } from "@/components/steps/SpeakerStep";
 import { SummaryStep } from "@/components/steps/SummaryStep";
 import { ScreenOverlay } from "@/components/overlay/ScreenOverlay";
+import { CameraOverlay } from "@/components/overlay/CameraOverlay";
+import { QuickShareOverlay } from "@/components/overlay/QuickShareOverlay";
+import { SpeakerOverlay } from "@/components/overlay/SpeakerOverlay";
 import { roomData } from "@/models/data";
 import { ExportModal, ExportFormData } from "@/components/modal/ExportModal";
 import { ProductCategory, RoomSize } from "@/types";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+import { isMobileDevice } from "@/utils/deviceDetector";
+import { MobileRotateOverlay } from "@/components/MobileRotateOverlay";
 
 // Step title mapping
 const getStepTitle = (step: number, category: ProductCategory | null) => {
@@ -54,15 +60,17 @@ const getStepTitle = (step: number, category: ProductCategory | null) => {
 export function ConfigurationPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [sceneView, setSceneView] = useState<"home" | "incall" | "share">(
-    "home"
+    "home",
   );
   const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const [previewDimensions, setPreviewDimensions] = useState({
     width: 0,
     height: 0,
   });
+  const [showMobileOverlay, setShowMobileOverlay] = useState(false);
   const infoRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
+  const previewOuterRef = useRef<HTMLDivElement>(null); // Ref untuk capture PDF
 
   const params = useParams<{
     category: ProductCategory;
@@ -92,6 +100,49 @@ export function ConfigurationPage() {
     selectedSpeaker,
   } = useConfigStore();
 
+  // Mobile device detection
+  useEffect(() => {
+    const checkDevice = () => {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const smallerDimension = Math.min(screenWidth, screenHeight);
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileUserAgent =
+        /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+          userAgent,
+        );
+      const hasTouchScreen =
+        "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      const isPortraitOrientation = screenHeight > screenWidth;
+
+      const isMobile = isMobileDevice();
+
+      console.log("ConfigurationPage - Device Check:", {
+        width: screenWidth,
+        height: screenHeight,
+        smallerDimension,
+        isPortrait: isPortraitOrientation,
+        isMobileUserAgent,
+        hasTouchScreen,
+        isMobile,
+        showOverlay: isMobile,
+      });
+      setShowMobileOverlay(isMobile);
+    };
+
+    // Initial check
+    checkDevice();
+
+    // Listen for orientation/resize changes
+    window.addEventListener("resize", checkDevice);
+    window.addEventListener("orientationchange", checkDevice);
+
+    return () => {
+      window.removeEventListener("resize", checkDevice);
+      window.removeEventListener("orientationchange", checkDevice);
+    };
+  }, []);
+
   // Initialize configuration ONCE
   useEffect(() => {
     if (category && roomSize && roomData.rooms[roomSize]) {
@@ -104,7 +155,7 @@ export function ConfigurationPage() {
           roomSize,
           room.title,
           room.capacity,
-          room.dimensions
+          room.dimensions,
         );
       }
     } else if (!category || !roomSize) {
@@ -132,8 +183,17 @@ export function ConfigurationPage() {
         // Subtract padding (40px each side from inset-10)
         const width = rect.width - 80;
         const height = rect.height - 80;
+
+        // Determine mode for logging
+        const mode = getContainerMode(width);
+
         setPreviewDimensions({ width, height });
-        console.log("Preview dimensions:", { width, height });
+
+        console.log("Preview dimensions:", {
+          width,
+          height,
+          mode, // DESKTOP or MOBILE
+        });
       }
     };
 
@@ -288,10 +348,10 @@ export function ConfigurationPage() {
     storePrevStep();
   };
 
-  const handleExportPDF = (data: ExportFormData) => {
-    console.log("Exporting PDF with data:", data);
-    setIsExportModalOpen(false);
-  };
+  // Show mobile overlay if on mobile device
+  if (showMobileOverlay) {
+    return <MobileRotateOverlay videoSrc="/rotate.mp4" />;
+  }
 
   if (!category || !roomSize) return null;
 
@@ -299,8 +359,11 @@ export function ConfigurationPage() {
   const isLastStep = currentStep === totalSteps;
 
   // Get room image - use rectangular layout for small/medium/large, baseImage for auditorium
-  const roomImage = room.layouts?.rectangular || room.baseImage;
-
+  const roomImage =
+    selectedTableLayout && "layouts" in room
+      ? room.layouts[selectedTableLayout.shape as keyof typeof room.layouts]
+      : ("layouts" in room ? room.layouts?.rectangular : undefined) ||
+        ("baseImage" in room ? room.baseImage : undefined);
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
@@ -327,18 +390,97 @@ export function ConfigurationPage() {
       {/* Main Content */}
       <div className="flex-1 gap-6 flex px-5 mt-5">
         {/* Left Side - Room Preview */}
-        <div className="flex-1 flex items-center justify-center bg-gray-100 rounded-2xl relative">
+        <div
+          ref={previewOuterRef}
+          className="w-[535px] h-[480px] md:w-[1300px] flex-1 flex items-center justify-center bg-gray-100 rounded-2xl relative"
+        >
           <div className="w-full">
+            {getStepTitle(currentStep, category) === "screens" && (
+              <div className="absolute top-0 left-2 w-60 p-3 z-50">
+                <div
+                  className="flex items-center justify-center h-7 gap-2 mb-3 relative"
+                  ref={infoRef}
+                >
+                  <p className="text-sm font-medium text-gray-600">
+                    Meeting Scene
+                  </p>
+                  <button
+                    onClick={() => setShowInfoTooltip(!showInfoTooltip)}
+                    className="text-gray-600 hover:text-gray-700 cursor-pointer transition-colors"
+                  >
+                    <Info size={16} />
+                  </button>
+
+                  {/* Tooltip */}
+                  {showInfoTooltip && (
+                    <div className="absolute left-4/5 ml-2 top-0 w-80 h-7 bg-black/40 text-white text-xs rounded-sm p-3 z-50 flex items-center justify-center text-center">
+                      <p>
+                        Display screen previews for various meeting scenarios
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <Menubar className="w-full h-10 bg-white">
+                  <MenubarMenu>
+                    <MenubarTrigger
+                      className={`flex-1 justify-center font-light ${
+                        sceneView === "home"
+                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
+                          : ""
+                      }`}
+                      onClick={() => setSceneView("home")}
+                    >
+                      Home
+                    </MenubarTrigger>
+                  </MenubarMenu>
+                  <MenubarMenu>
+                    <MenubarTrigger
+                      className={`flex-1 justify-center font-light ${
+                        sceneView === "incall"
+                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
+                          : ""
+                      }`}
+                      onClick={() => setSceneView("incall")}
+                    >
+                      In Call
+                    </MenubarTrigger>
+                  </MenubarMenu>
+                  <MenubarMenu>
+                    <MenubarTrigger
+                      className={`flex-1 justify-center font-light ${
+                        sceneView === "share"
+                          ? "bg-teal-500 text-white data-[state=open]:bg-teal-500 data-[state=open]:text-white"
+                          : ""
+                      }`}
+                      onClick={() => setSceneView("share")}
+                    >
+                      Share
+                    </MenubarTrigger>
+                  </MenubarMenu>
+                </Menubar>
+              </div>
+            )}
+
             <div
               ref={previewContainerRef}
               className="w-full mx-auto aspect-[4/2] py-10 flex items-center justify-center relative"
             >
-              {/* Room Size */}
+              {/* Room */}
               <img
                 src={roomImage}
                 alt={room.title}
                 className="w-full h-full object-contain"
               />
+
+              {/* Speaker Overlay */}
+              {previewDimensions.width > 0 && (
+                <SpeakerOverlay
+                  containerWidth={previewDimensions.width}
+                  containerHeight={previewDimensions.height}
+                />
+              )}
+
               {/* Screen Overlay */}
               {previewDimensions.width > 0 && (
                 <ScreenOverlay
@@ -347,18 +489,35 @@ export function ConfigurationPage() {
                   containerHeight={previewDimensions.height}
                 />
               )}
+
+              {/* Camera Overlay */}
+              {previewDimensions.width > 0 && (
+                <CameraOverlay
+                  containerWidth={previewDimensions.width}
+                  containerHeight={previewDimensions.height}
+                />
+              )}
+
+              {/* QuickShare Overlay */}
+              {previewDimensions.width > 0 && (
+                <QuickShareOverlay
+                  containerWidth={previewDimensions.width}
+                  containerHeight={previewDimensions.height}
+                />
+              )}
+
               {/* Overlay grid */}
-              <div className="absolute inset-10 grid grid-cols-24 grid-rows-12 border pointer-events-none">
+              {/* <div className="absolute inset-10 grid grid-cols-24 grid-rows-12 border pointer-events-none">
                 {Array.from({ length: 24 * 12 }).map((_, i) => (
                   <div key={i} className="border border-black/5" />
                 ))}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
 
         {/* Right Side - Configuration Steps */}
-        <div className="w-full max-w-[480px] flex flex-col">
+        <div className="w-[300px] h-[480px] lg:w-full md:max-w-[480px] flex flex-col">
           {/* Step Content */}
           <div className="flex-1 overflow-y-auto">{renderStep()}</div>
           {/* Navigation Buttons */}
@@ -391,7 +550,7 @@ export function ConfigurationPage() {
       <ExportModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
-        onExport={handleExportPDF}
+        previewRef={previewOuterRef}
       />
     </div>
   );

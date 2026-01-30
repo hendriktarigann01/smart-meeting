@@ -22,4 +22,12 @@ export const TableLayoutData: TableLayoutOption[] = [
     description: "Ideal for creating a cozy and social atmosphere.",
     image: "/table/round.png",
   },
+  {
+    id: "roomshaped",
+    shape: "roomshaped",
+    title: "U-Shaped",
+    description:
+      "Provides an open center for accessibility and interaction, ideal for collaborative or presentation settings.",
+    image: "/table/u-shaped.png",
+  },
 ];

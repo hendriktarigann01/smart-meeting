@@ -2,6 +2,7 @@ import { OptionCard } from "@/components/OptionCard";
 import { CompareModal } from "@/components/modal/CompareModal";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { QuickShareOption } from "@/types";
+import { autoSelect } from "@/utils/autoSelect";
 
 const quickShareOptions: QuickShareOption[] = [
   {
@@ -78,6 +79,8 @@ export function QuickShareStep() {
       return 5; // Step ke-5 untuk Video Wall & LED Indoor
     }
   };
+
+  autoSelect(quickShareOptions, selectedQuickShare, setSelectedQuickShare);
 
   return (
     <div className="space-y-4">

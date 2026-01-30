@@ -4,6 +4,7 @@ import { ScreenLayoutOption } from "@/types/index";
 import { Card, CardContent } from "@/components/ui/card";
 import { HintMessage } from "../ui/HintMessage";
 import { ScreenData } from "@/models/screen";
+import { autoSelect } from "@/utils/autoSelect";
 
 export function ScreenStep() {
   const {
@@ -24,6 +25,8 @@ export function ScreenStep() {
       return 3;
     }
   };
+
+  autoSelect(screenOptions, selectedScreenLayout, setSelectedScreenLayout);
 
   return (
     <div className="space-y-4">
