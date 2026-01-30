@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   row: {
-    flexDirection: "row",
+    flexDirection: "row", 
     marginBottom: 15,
     gap: 40,
   },
